@@ -17,5 +17,6 @@ public class Copier {
         Path destPath = dest.toPath();
         System.out.println("Копирую из: " + "\\\\" + address + "\\DavWWWRoot\\DCIM\\Camera");
         Files.walkFileTree(srcPath, new CopyDirVisitor(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING));
+        //Another test message
     }
 }
