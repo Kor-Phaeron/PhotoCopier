@@ -13,6 +13,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
     public static long totalFilesSizeToCopy;
     public static float percentCopied;
     public static int copying;
+    public static int copying2;
 //    static final String ANSI_GREEN = "\u001b[32m";
 //    static final String ANSI_RESET = "\u001B[0m";
     public static ProgressMonitor pm1;
@@ -46,7 +47,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 //        pm1.setProgress(copying);
-        pb1.setValue(copying);
+        pb1.setValue(copying2);
         SwingUtilities.invokeLater(() -> MainGUI.outputTextArea.setText(MainGUI.outputTextArea.getText()
                 + String.format(file.getFileName() + " is copying..." + "\n")));
         System.out.println((file.getFileName() + " is copying..."));
@@ -59,9 +60,13 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
         totalFilesSizeCopied += Methods.size(file);
         totalFilesSizeToCopy = Methods.size(fromPath);
         percentCopied = (float) (totalFilesSizeCopied) / (float) totalFilesSizeToCopy * 100;
-        double copyingPercent = percentCopied*10;
+        float percentCopied2 = (float) (totalFilesSizeCopied) / (float) totalFilesSizeToCopy * 1000;
+        double copyingPercent = percentCopied/10;
+        pb1.setString(numberFormat.format(percentCopied)+"%");
         copying = (int) percentCopied;
+        copying2 = (int) percentCopied2*1;
         System.out.println("Overall progress " + numberFormat.format(percentCopied) + "%");
+        System.out.println("Progressbar value: " + pb1.getValue());
 //        System.out.println("Overall progress x10 " + percentCopied*10 + "%");
 //        System.out.println("Overall progress int " + (int) percentCopied + "%");
 //        System.out.println("Overall progress int x10 " + (int) copyingPercent + "%");
@@ -71,6 +76,10 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
 //            System.exit(1);
 //            return FileVisitResult.TERMINATE;
 //        }
+
+        if (percentCopied == 100) {
+            pb1.setValue(100);
+        }
 
         try {
             TimeUnit.MILLISECONDS.sleep(0);

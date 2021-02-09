@@ -33,6 +33,9 @@ public class MainGUI extends JFrame implements ActionListener {
         frame = new JFrame("Копирование фотографий");
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        pb.setMinimum(0);
+        pb.setMaximum(1000);
+        pb.setStringPainted(true);
         frame.add(pb);
 
         JPanel controlPanel = new JPanel();
@@ -276,6 +279,8 @@ public class MainGUI extends JFrame implements ActionListener {
                     + addressStringPort.getText();
             System.out.println("Адрес задан: " + address);
             Copier.address = address;
+            start.setEnabled(false);
+            folderChoose.setEnabled(false);
         });
 
         //start.addActionListener(createStartTaskActionListener(frame));
@@ -331,13 +336,13 @@ public class MainGUI extends JFrame implements ActionListener {
 //    }
 
     public static void copyAction(){
-        JDialog dlg = new JDialog(frame,"Progress dialog",true);
-        frame.getContentPane().setLayout(new BorderLayout());
-        dlg.getContentPane().setLayout(new BorderLayout());
-        dlg.getContentPane().add(BorderLayout.CENTER, pb);
-        dlg.getContentPane().add(BorderLayout.NORTH, new JLabel("Progress..."));
-        dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        dlg.setSize(300, 75);
+//        JDialog dlg = new JDialog(frame,"Progress dialog",true);
+//        frame.getContentPane().setLayout(new BorderLayout());
+//        dlg.getContentPane().setLayout(new BorderLayout());
+//        dlg.getContentPane().add(BorderLayout.CENTER, pb);
+//        dlg.getContentPane().add(BorderLayout.NORTH, new JLabel("Progress..."));
+//        dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+//        dlg.setSize(300, 75);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -364,13 +369,13 @@ public class MainGUI extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(
                             null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        dlg.setVisible(false);
-                    }
-
-                });
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        dlg.setVisible(false);
+//                    }
+//
+//                });
             }
 
         });

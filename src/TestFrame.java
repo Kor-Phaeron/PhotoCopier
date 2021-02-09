@@ -30,6 +30,7 @@ public class TestFrame extends JFrame {
         progressBar2.setStringPainted(true);
         progressBar2.setMinimum(0);
         progressBar2.setMaximum(100);
+        progressBar2.setValue(50);
         panel.add(progressBar2);
 
         panel.add(Box.createVerticalGlue());
