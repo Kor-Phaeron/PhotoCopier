@@ -269,6 +269,8 @@ public class MainGUI {
                     + addressStringPort.getText();
             System.out.println("Адрес задан: " + address);
             Copier.address = address;
+            start.setEnabled(false);
+            folderChoose.setEnabled(false);
         });
 
         start.addActionListener(createStartTaskActionListener(frame));
