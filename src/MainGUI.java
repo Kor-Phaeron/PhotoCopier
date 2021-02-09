@@ -188,6 +188,9 @@ public class MainGUI extends JFrame implements ActionListener {
         addressStringPort.setHorizontalAlignment(JTextField.CENTER);
         fields.add(addressStringPort);
 
+        JLabel transferSpeed = new JLabel("Скорость копирования: ");
+        transferSpeed.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+
         //Setting layout
         GroupLayout layout = new GroupLayout(frame.getContentPane());
         frame.getContentPane().setLayout(layout);
@@ -225,6 +228,7 @@ public class MainGUI extends JFrame implements ActionListener {
                                         .addComponent(addressStringPort))
                                 .addComponent(start)
                                 .addComponent(pb)
+                                .addComponent(transferSpeed)
                                 .addComponent(controlPanel)
                         )));
         layout.setVerticalGroup(layout.createSequentialGroup()
@@ -254,6 +258,7 @@ public class MainGUI extends JFrame implements ActionListener {
                 .addComponent(instruction5)
                 .addComponent(start)
                 .addComponent(pb)
+                .addComponent(transferSpeed)
                 .addComponent(controlPanel)
         );
 

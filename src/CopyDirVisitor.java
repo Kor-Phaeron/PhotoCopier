@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLOutput;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +19,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
 //    static final String ANSI_RESET = "\u001B[0m";
     public static ProgressMonitor pm1;
     public static JProgressBar pb1;
+    public static double transferSpeedMB = 0;
 
 
     public static void setPm(ProgressMonitor pm) {
@@ -47,6 +49,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 //        pm1.setProgress(copying);
+        Long start = System.nanoTime();
         pb1.setValue(copying2);
         SwingUtilities.invokeLater(() -> MainGUI.outputTextArea.setText(MainGUI.outputTextArea.getText()
                 + String.format(file.getFileName() + " is copying..." + "\n")));
@@ -76,6 +79,16 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
 //            System.exit(1);
 //            return FileVisitResult.TERMINATE;
 //        }
+        Long end = System.nanoTime();
+        double fileSize = Methods.size(file)/1024.0/1024.0;
+        int timeElapsed = (int) ((end - start)/100000000);
+
+        transferSpeedMB = fileSize/timeElapsed*10;
+        System.out.println("Время начала передачи файла: " + start/100000000);
+        System.out.println("Время конца передачи файла: " + end/100000000);
+        System.out.println("Время передачи файла: " + timeElapsed);
+        System.out.println("Размер переданного файла: " + fileSize);
+        System.out.println("Скорость передачи данных: " + numberFormat.format(transferSpeedMB) + " MBps");
 
         if (percentCopied == 100) {
             pb1.setValue(100);
