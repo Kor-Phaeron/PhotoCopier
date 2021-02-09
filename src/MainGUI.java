@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
@@ -10,7 +12,8 @@ import java.util.Vector;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
-public class MainGUI {
+public class MainGUI extends JFrame implements ActionListener {
+    static JFrame frame;
     static String addressFromCopy;
     static String addressToCopy;
     static JFileChooser chooser;
@@ -20,17 +23,20 @@ public class MainGUI {
     static JTextArea outputTextArea;
     static JScrollPane scrollPanel;
     static Vector<Component> fields = new Vector<>(5);
+    static JProgressBar pb = new JProgressBar(JProgressBar.HORIZONTAL);
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
 
         ToolTipManager.sharedInstance().setInitialDelay(0);
         ToolTipManager.sharedInstance().setDismissDelay(50000);
 
-        JFrame frame = new JFrame("Копирование фотографий");
+        frame = new JFrame("Копирование фотографий");
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.add(pb);
+
         JPanel controlPanel = new JPanel();
-        outputTextArea = new JTextArea("",10,75);
+        outputTextArea = new JTextArea("", 10, 75);
         scrollPanel = new JScrollPane(outputTextArea);
         outputTextArea.setFont(outputTextArea.getFont().deriveFont(12f));
         controlPanel.add(scrollPanel);
@@ -46,7 +52,7 @@ public class MainGUI {
 
         folderChoose.addActionListener(e -> {
             chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new java.io.File("."));
+            chooser.setCurrentDirectory(new File("."));
             chooser.setFileSelectionMode(1);
             chooserTitle = "Папка сохранения фотографий";
             chooser.setDialogTitle(chooserTitle);
@@ -59,9 +65,9 @@ public class MainGUI {
             //
             if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 System.out.println("getCurrentDirectory(): "
-                        +  chooser.getCurrentDirectory());
+                        + chooser.getCurrentDirectory());
                 System.out.println("getSelectedFile() : "
-                        +  chooser.getSelectedFile());
+                        + chooser.getSelectedFile());
                 addressToCopy = chooser.getSelectedFile().toString();
                 Copier.dest = chooser.getSelectedFile();
                 destPath0.setText("Путь копирования фотографий:");
@@ -69,8 +75,7 @@ public class MainGUI {
                 destPath1.setText(chooser.getSelectedFile().toString());
                 destPath1.setFont(new Font("Comic sans MS", Font.BOLD, 18));
                 destPath1.setForeground(Color.green);
-            }
-            else {
+            } else {
                 System.out.println("No Selection ");
             }
         });
@@ -80,15 +85,15 @@ public class MainGUI {
         String webDAVname = "Значок WebDAV Server";
         URL urlWebDAVqr = MainGUI.class.getResource("/res/qrWebDAV.gif");
         String webDAVqrName = "<center>" + "QR код для скачивания" + "</center>";
-        String webDAVServer = "<html><center><img src='" + urlWebDAVimg + "'>"+"<br />"
-                                + webDAVname  +"<br />"
-                                + "<img src='" + urlWebDAVqr + "'>"+ "<br />"
-                                + webDAVqrName + "</center></html>";
+        String webDAVServer = "<html><center><img src='" + urlWebDAVimg + "'>" + "<br />"
+                + webDAVname + "<br />"
+                + "<img src='" + urlWebDAVqr + "'>" + "<br />"
+                + webDAVqrName + "</center></html>";
 
         //PowerButton image
         URL urlPowerimg = MainGUI.class.getResource("/res/Power.png");
         String powerName = "<center>" + "Значок кнопки включения" + "</center>";
-        String powerButton = "<html><center><img src='" + urlPowerimg + "'></center>"+"<br />"+ powerName + "</html>";
+        String powerButton = "<html><center><img src='" + urlPowerimg + "'></center>" + "<br />" + powerName + "</html>";
 
         //Icon image
         URL icoImage = MainGUI.class.getResource("/res/Copy.png");
@@ -200,23 +205,24 @@ public class MainGUI {
                                 .addComponent(instruction3)
                                 .addComponent(instruction4)
                                 .addComponent(instruction5))
-                .addGroup(layout.createParallelGroup(CENTER)
+                        .addGroup(layout.createParallelGroup(CENTER)
                                 .addComponent(folderChoose)
                                 .addComponent(destPath0)
                                 .addComponent(destPath1)
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(addressEl0)
-                                .addComponent(addressString1)
-                                .addComponent(addressEl1)
-                                .addComponent(addressString2)
-                                .addComponent(addressEl2)
-                                .addComponent(addressString3)
-                                .addComponent(addressEl3)
-                                .addComponent(addressString4)
-                                .addComponent(addressEl4)
-                                .addComponent(addressStringPort))
-                        .addComponent(start)
-                        .addComponent(controlPanel)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(addressEl0)
+                                        .addComponent(addressString1)
+                                        .addComponent(addressEl1)
+                                        .addComponent(addressString2)
+                                        .addComponent(addressEl2)
+                                        .addComponent(addressString3)
+                                        .addComponent(addressEl3)
+                                        .addComponent(addressString4)
+                                        .addComponent(addressEl4)
+                                        .addComponent(addressStringPort))
+                                .addComponent(start)
+                                .addComponent(pb)
+                                .addComponent(controlPanel)
                         )));
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(instruction0)
@@ -244,6 +250,7 @@ public class MainGUI {
                 .addComponent(destPath1)
                 .addComponent(instruction5)
                 .addComponent(start)
+                .addComponent(pb)
                 .addComponent(controlPanel)
         );
 
@@ -253,7 +260,7 @@ public class MainGUI {
         frame.pack();
         frame.setVisible(true);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+        frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
         addressFromCopy = addressString1.getText() + "."
                 + addressString2.getText() + "."
                 + addressString3.getText() + "."
@@ -271,51 +278,148 @@ public class MainGUI {
             Copier.address = address;
         });
 
-        start.addActionListener(createStartTaskActionListener(frame));
+        //start.addActionListener(createStartTaskActionListener(frame));
+        start.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                copyAction();
+            }
+        });
+
     }
 
-    private static ActionListener createStartTaskActionListener(JFrame frame) {
-        //for progress monitor dialog title
-        UIManager.put("ProgressMonitor.progressText", "Копирование...");
-        //frame.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        frame.setResizable(false);
-        return (ae) -> new Thread(() -> {
-            //creating ProgressMonitor instance
-            ProgressMonitor pm = new ProgressMonitor(frame, "Копирование фотографий",
-                    "Копирование...", 0, 100);
-            //decide after 0 millis whether to show popup or not
-            pm.setMillisToDecideToPopup(0);
-            //after deciding if predicted time is longer than 100 show popup
-            pm.setMillisToPopup(0);
-            CopyDirVisitor.setPm(pm);
-            try {
-                Thread.sleep(1);
-                Copier.copyStart();
-            }
-            catch (IOException | InterruptedException | NullPointerException e) {
-                StringBuilder sb = new StringBuilder("Error: ");
-                sb.append(e.getMessage());
-                sb.append("\n");
-                for (StackTraceElement ste : e.getStackTrace()) {
-                    sb.append(ste.toString());
-                    sb.append("\n");
-                }
-                JTextArea jta = new JTextArea(sb.toString());
-                jta.setFont(jta.getFont().deriveFont(12f));
-                JScrollPane jsp = new JScrollPane(jta){
-                    @Override
-                    public Dimension getPreferredSize() {
-                        return new Dimension(480, 320);
-                    }
-                };
-                JOptionPane.showMessageDialog(
-                        null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            pm.setNote("Копирование завершено!");
-        }).start();
-    }
 
 //    private static ActionListener createStartTaskActionListener(JFrame frame) {
+//        //for progress monitor dialog title
+//        UIManager.put("ProgressMonitor.progressText", "Копирование...");
+//        //frame.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+//        frame.setResizable(false);
+//        return (ae) -> new Thread(() -> {
+//            //creating ProgressMonitor instance
+//            ProgressMonitor pm = new ProgressMonitor(frame, "Копирование фотографий",
+//                    "Копирование...", 0, 100);
+//            //decide after 0 millis whether to show popup or not
+//            pm.setMillisToDecideToPopup(0);
+//            //after deciding if predicted time is longer than 100 show popup
+//            pm.setMillisToPopup(0);
+//            CopyDirVisitor.setPm(pm);
+//            try {
+//                Thread.sleep(1);
+//                Copier.copyStart();
+//            }
+//            catch (IOException | InterruptedException | NullPointerException e) {
+//                StringBuilder sb = new StringBuilder("Error: ");
+//                sb.append(e.getMessage());
+//                sb.append("\n");
+//                for (StackTraceElement ste : e.getStackTrace()) {
+//                    sb.append(ste.toString());
+//                    sb.append("\n");
+//                }
+//                JTextArea jta = new JTextArea(sb.toString());
+//                jta.setFont(jta.getFont().deriveFont(12f));
+//                JScrollPane jsp = new JScrollPane(jta){
+//                    @Override
+//                    public Dimension getPreferredSize() {
+//                        return new Dimension(480, 320);
+//                    }
+//                };
+//                JOptionPane.showMessageDialog(
+//                        null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
+//            }
+//            pm.setNote("Копирование завершено!");
+//        }).start();
+//    }
+
+    public static void copyAction(){
+        JDialog dlg = new JDialog(frame,"Progress dialog",true);
+        frame.getContentPane().setLayout(new BorderLayout());
+        dlg.getContentPane().setLayout(new BorderLayout());
+        dlg.getContentPane().add(BorderLayout.CENTER, pb);
+        dlg.getContentPane().add(BorderLayout.NORTH, new JLabel("Progress..."));
+        dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        dlg.setSize(300, 75);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                CopyDirVisitor.setPb(pb);
+                try {
+                    Thread.sleep(1);
+                    Copier.copyStart();
+                } catch (IOException | InterruptedException | NullPointerException e) {
+                    StringBuilder sb = new StringBuilder("Error: ");
+                    sb.append(e.getMessage());
+                    sb.append("\n");
+                    for (StackTraceElement ste : e.getStackTrace()) {
+                        sb.append(ste.toString());
+                        sb.append("\n");
+                    }
+                    JTextArea jta = new JTextArea(sb.toString());
+                    jta.setFont(jta.getFont().deriveFont(12f));
+                    JScrollPane jsp = new JScrollPane(jta) {
+                        @Override
+                        public Dimension getPreferredSize() {
+                            return new Dimension(480, 320);
+                        }
+                    };
+                    JOptionPane.showMessageDialog(
+                            null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dlg.setVisible(false);
+                    }
+
+                });
+            }
+
+        });
+        t.start();
+    }
+
+    //    private static ActionListener createStartTaskActionListener(JFrame frame) {
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                frame.add(pb);
+//                frame.pack();
+//                frame.setVisible(true);
+//
+//                CopyDirVisitor.setPb(pb);
+//                try {
+//                    Thread.sleep(1);
+//                    Copier.copyStart();
+//                }
+//                catch (IOException | InterruptedException | NullPointerException e) {
+//                    StringBuilder sb = new StringBuilder("Error: ");
+//                    sb.append(e.getMessage());
+//                    sb.append("\n");
+//                    for (StackTraceElement ste : e.getStackTrace()) {
+//                        sb.append(ste.toString());
+//                        sb.append("\n");
+//                    }
+//                    JTextArea jta = new JTextArea(sb.toString());
+//                    jta.setFont(jta.getFont().deriveFont(12f));
+//                    JScrollPane jsp = new JScrollPane(jta){
+//                        @Override
+//                        public Dimension getPreferredSize() {
+//                            return new Dimension(480, 320);
+//                        }
+//                    };
+//                    JOptionPane.showMessageDialog(
+//                            null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
+//                }
+////                SwingUtilities.invokeLater(new Runnable() {
+////                    @Override
+////                    public void run() {
+////                        dlg.setVisible(false);
+////                    }
+////
+////                });
+//            }
+//
+//        });
+//        t.start();
 //        //for progress monitor dialog title
 //        UIManager.put("ProgressMonitor.progressText", "Копирование...");
 //        //frame.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
@@ -360,5 +464,7 @@ public class MainGUI {
 //                        null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
 //            }
 //        }).start();
-//    }
+    public void actionPerformed(ActionEvent event) {
+        copyAction();
+    }
 }

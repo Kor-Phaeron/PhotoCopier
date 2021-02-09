@@ -45,8 +45,8 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        pm1.setProgress(copying);
-//        pb1.setValue(copying);
+//        pm1.setProgress(copying);
+        pb1.setValue(copying);
         SwingUtilities.invokeLater(() -> MainGUI.outputTextArea.setText(MainGUI.outputTextArea.getText()
                 + String.format(file.getFileName() + " is copying..." + "\n")));
         System.out.println((file.getFileName() + " is copying..."));
@@ -55,7 +55,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
                 + String.format(file.getFileName() + " is copying..." + "done!" + "\n")));
         System.out.println((file.getFileName() + " is copying..." + "done!"));
         DecimalFormat numberFormat = new DecimalFormat("0.00");
-        pm1.setNote("Скопировано " + numberFormat.format(percentCopied) + " %");
+//        pm1.setNote("Скопировано " + numberFormat.format(percentCopied) + " %");
         totalFilesSizeCopied += Methods.size(file);
         totalFilesSizeToCopy = Methods.size(fromPath);
         percentCopied = (float) (totalFilesSizeCopied) / (float) totalFilesSizeToCopy * 100;
@@ -66,11 +66,11 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
 //        System.out.println("Overall progress int " + (int) percentCopied + "%");
 //        System.out.println("Overall progress int x10 " + (int) copyingPercent + "%");
 //        System.out.println("Overall progress int/10 " + (int) percentCopied/10 + "%");
-        if (pm1.isCanceled()) {
-            pm1.close();
-            System.exit(1);
-            return FileVisitResult.TERMINATE;
-        }
+//        if (pm1.isCanceled()) {
+//            pm1.close();
+//            System.exit(1);
+//            return FileVisitResult.TERMINATE;
+//        }
 
         try {
             TimeUnit.MILLISECONDS.sleep(0);
