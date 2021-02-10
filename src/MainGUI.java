@@ -117,6 +117,15 @@ public class MainGUI extends JFrame implements ActionListener {
         instructionHelpPower.setToolTipText(powerButton);
         JLabel instruction0 = new JLabel("Инструкция:");
         instruction0.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        JLabel instruction00 = new JLabel("Перед первым запуском программы, обязательно");
+        instruction00.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        instruction00.setForeground(Color.red);
+        JLabel instruction01 = new JLabel("запустить WebDAV FIX.bat от имени Администратора");
+        instruction01.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        instruction01.setForeground(Color.red);
+        JLabel instruction02 = new JLabel("(только для Windows)");
+        instruction02.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        instruction02.setForeground(Color.red);
         JLabel instruction1 = new JLabel("1. Запустите на телефоне приложение WebDAV server.");
         instruction1.setFont(new Font("Comic sans MS", Font.BOLD, 18));
         JLabel instruction2 = new JLabel("2. В приложении нажмите на значок включения.");
@@ -208,6 +217,9 @@ public class MainGUI extends JFrame implements ActionListener {
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(CENTER)
+                        .addComponent(instruction00)
+                        .addComponent(instruction01)
+                        .addComponent(instruction02)
                         .addComponent(instruction0)
                         .addGroup(layout.createParallelGroup(LEADING)
                                 .addGroup(layout.createSequentialGroup()
@@ -243,6 +255,9 @@ public class MainGUI extends JFrame implements ActionListener {
                                 .addComponent(controlPanel)
                         )));
         layout.setVerticalGroup(layout.createSequentialGroup()
+                .addComponent(instruction00)
+                .addComponent(instruction01)
+                .addComponent(instruction02)
                 .addComponent(instruction0)
                 .addGroup(layout.createParallelGroup()
                         .addComponent(instruction1)

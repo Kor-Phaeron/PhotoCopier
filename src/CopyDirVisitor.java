@@ -90,6 +90,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
             pb1.setString("0,00%");
             totalFilesSizeCopied = 0;
             filesCopied = 1;
+            MainGUI.transferSpeedShow.setText("0.0 МБ/сек");
             return FileVisitResult.TERMINATE;
         }
 
