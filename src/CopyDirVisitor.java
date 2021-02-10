@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -18,6 +20,8 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
     public static JProgressBar pb1;
     public static double transferSpeedMB = 0;
     public static String transferSpeedMBShow;
+    public static int totalFiles = 0;
+    public static int filesCopied = 1;
 
     public static void setPb(JProgressBar pb) {
         pb1 = pb;
@@ -41,6 +45,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        totalFiles = new File(String.valueOf(fromPath)).listFiles().length;
         Long start = System.nanoTime();
         pb1.setValue(copying2);
         SwingUtilities.invokeLater(() -> MainGUI.outputTextArea.setText(MainGUI.outputTextArea.getText()
@@ -56,7 +61,7 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
         percentCopied = (float) (totalFilesSizeCopied) / (float) totalFilesSizeToCopy * 100;
         float percentCopied2 = (float) (totalFilesSizeCopied) / (float) totalFilesSizeToCopy * 1000;
         double copyingPercent = percentCopied/10;
-        pb1.setString(numberFormat.format(percentCopied)+"%");
+        pb1.setString(numberFormat.format(percentCopied)+"% " + "(" + filesCopied + "/" + totalFiles + ")");
         copying = (int) percentCopied;
         copying2 = (int) percentCopied2*1;
         System.out.println("Overall progress " + numberFormat.format(percentCopied) + "%");
@@ -66,17 +71,26 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
         int timeElapsed = (int) ((end - start)/10000000);
 
         transferSpeedMB = fileSize/timeElapsed*100;
-        System.out.println("Время начала передачи файла: " + start/100000000);
-        System.out.println("Время конца передачи файла: " + end/100000000);
-        System.out.println("Время передачи файла: " + timeElapsed);
-        System.out.println("Размер переданного файла: " + numberFormat.format(fileSize) + " MB");
-        System.out.println("Скорость передачи данных: " + numberFormat.format(transferSpeedMB) + " MBps");
+//        System.out.println("Время начала передачи файла: " + start/100000000);
+//        System.out.println("Время конца передачи файла: " + end/100000000);
+//        System.out.println("Время передачи файла: " + timeElapsed);
+//        System.out.println("Размер переданного файла: " + numberFormat.format(fileSize) + " MB");
+//        System.out.println("Скорость передачи данных: " + numberFormat.format(transferSpeedMB) + " MBps");
         transferSpeedMBShow = numberFormat.format(transferSpeedMB);
-        System.out.println("TransferSpeedMBSHOW = " + transferSpeedMBShow);
-        SwingUtilities.invokeLater(() -> MainGUI.transferSpeedShow.setText(numberFormat.format(transferSpeedMB) + " МБ/сек"));
+        //System.out.println("TransferSpeedMBSHOW = " + transferSpeedMBShow);
 
         if (percentCopied == 100) {
             pb1.setValue(100);
+        }
+
+        if (MainGUI.stop.getModel().isEnabled() == false) {
+            System.out.println("Нажата кнопка стоп");
+            MainGUI.stop.setEnabled(true);
+            pb1.setValue(0);
+            pb1.setString("0,00%");
+            totalFilesSizeCopied = 0;
+            filesCopied = 1;
+            return FileVisitResult.TERMINATE;
         }
 
         try {
@@ -84,7 +98,9 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
         } catch (InterruptedException | NullPointerException e) {
             e.printStackTrace();
         }
-
+        filesCopied += 1;
+        SwingUtilities.invokeLater(() -> MainGUI.transferSpeedShow.setText(numberFormat.format(transferSpeedMB) + " МБ/сек"));
+        SwingUtilities.invokeLater(() -> MainGUI.filesCopied.setText(filesCopied + " из " + totalFiles + "."));
         return FileVisitResult.CONTINUE;
     }
 }

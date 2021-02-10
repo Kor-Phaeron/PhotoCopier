@@ -24,6 +24,9 @@ public class MainGUI extends JFrame implements ActionListener {
     static JScrollPane scrollPanel;
     static Vector<Component> fields = new Vector<>(5);
     static JProgressBar pb = new JProgressBar(JProgressBar.HORIZONTAL);
+    static JButton start = new JButton("Старт");
+    static JButton stop = new JButton("Стоп");
+    static JLabel filesCopied = new JLabel();
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
 
@@ -138,10 +141,8 @@ public class MainGUI extends JFrame implements ActionListener {
         addressEl4.setFont(new Font("Comic sans MS", Font.BOLD, 18));
 
 
-        JButton start = new JButton("Старт");
-        start.setFont(new Font("Comic sans MS", Font.BOLD, 18));
 
-        JButton stop = new JButton("Стоп");
+        start.setFont(new Font("Comic sans MS", Font.BOLD, 18));
         stop.setFont(new Font("Comic sans MS", Font.BOLD, 18));
         stop.setVisible(false);
 
@@ -194,8 +195,9 @@ public class MainGUI extends JFrame implements ActionListener {
 
         JLabel transferSpeed = new JLabel("Скорость копирования: ");
         transferSpeed.setFont(new Font("Comic sans MS", Font.BOLD, 18));
-        //JLabel transferSpeedShow = new JLabel(tSpeed + " MBps");
         transferSpeedShow.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        JLabel filesCopiedLabel = new JLabel("Файлов скопировано: ");
+        filesCopiedLabel.setFont(new Font("Comic sans MS", Font.BOLD, 18));
 
         //Setting layout
         GroupLayout layout = new GroupLayout(frame.getContentPane());
@@ -291,11 +293,21 @@ public class MainGUI extends JFrame implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 stop.setVisible(false);
+                stop.setEnabled(false);
                 start.setVisible(true);
                 start.setEnabled(true);
-                
+                folderChoose.setEnabled(true);
+                addressString1.setEnabled(true);
+                addressString2.setEnabled(true);
+                addressString3.setEnabled(true);
+                addressString4.setEnabled(true);
+                addressStringPort.setEnabled(true);
             }
         });
+
+        if (stop.getModel().isPressed()) {
+            System.out.println("Кнопка стоп нажата!!!");
+        }
 
         start.addActionListener(arg0 -> {
             String address = addressString1.getText() + "."
@@ -307,6 +319,7 @@ public class MainGUI extends JFrame implements ActionListener {
             Copier.address = address;
             start.setEnabled(false);
             start.setVisible(false);
+            //stop.setEnabled(true);
             stop.setVisible(true);
             folderChoose.setEnabled(false);
             addressString1.setEnabled(false);
