@@ -7,7 +7,6 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.FileAlreadyExistsException;
 import java.util.Vector;
 
 import static javax.swing.GroupLayout.Alignment.*;
@@ -20,6 +19,7 @@ public class MainGUI extends JFrame implements ActionListener {
     static String chooserTitle;
     static JLabel destPath0 = new JLabel("Папка не выбрана!");
     static JLabel destPath1 = new JLabel(" ");
+    static JLabel transferSpeedShow = new JLabel("0.0 МБ/сек");
     static JTextArea outputTextArea;
     static JScrollPane scrollPanel;
     static Vector<Component> fields = new Vector<>(5);
@@ -141,6 +141,10 @@ public class MainGUI extends JFrame implements ActionListener {
         JButton start = new JButton("Старт");
         start.setFont(new Font("Comic sans MS", Font.BOLD, 18));
 
+        JButton stop = new JButton("Стоп");
+        stop.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        stop.setVisible(false);
+
         KeyListener k = new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -190,6 +194,8 @@ public class MainGUI extends JFrame implements ActionListener {
 
         JLabel transferSpeed = new JLabel("Скорость копирования: ");
         transferSpeed.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        //JLabel transferSpeedShow = new JLabel(tSpeed + " MBps");
+        transferSpeedShow.setFont(new Font("Comic sans MS", Font.BOLD, 18));
 
         //Setting layout
         GroupLayout layout = new GroupLayout(frame.getContentPane());
@@ -227,8 +233,11 @@ public class MainGUI extends JFrame implements ActionListener {
                                         .addComponent(addressEl4)
                                         .addComponent(addressStringPort))
                                 .addComponent(start)
+                                .addComponent(stop)
                                 .addComponent(pb)
-                                .addComponent(transferSpeed)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(transferSpeed)
+                                        .addComponent(transferSpeedShow))
                                 .addComponent(controlPanel)
                         )));
         layout.setVerticalGroup(layout.createSequentialGroup()
@@ -257,8 +266,11 @@ public class MainGUI extends JFrame implements ActionListener {
                 .addComponent(destPath1)
                 .addComponent(instruction5)
                 .addComponent(start)
+                .addComponent(stop)
                 .addComponent(pb)
-                .addComponent(transferSpeed)
+                .addGroup(layout.createParallelGroup()
+                        .addComponent(transferSpeed)
+                        .addComponent(transferSpeedShow))
                 .addComponent(controlPanel)
         );
 
@@ -275,6 +287,15 @@ public class MainGUI extends JFrame implements ActionListener {
                 + addressString4.getText() + "@"
                 + addressStringPort.getText();
 
+        stop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stop.setVisible(false);
+                start.setVisible(true);
+                start.setEnabled(true);
+                
+            }
+        });
 
         start.addActionListener(arg0 -> {
             String address = addressString1.getText() + "."
@@ -285,10 +306,16 @@ public class MainGUI extends JFrame implements ActionListener {
             System.out.println("Адрес задан: " + address);
             Copier.address = address;
             start.setEnabled(false);
+            start.setVisible(false);
+            stop.setVisible(true);
             folderChoose.setEnabled(false);
+            addressString1.setEnabled(false);
+            addressString2.setEnabled(false);
+            addressString3.setEnabled(false);
+            addressString4.setEnabled(false);
+            addressStringPort.setEnabled(false);
         });
 
-        //start.addActionListener(createStartTaskActionListener(frame));
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -298,56 +325,7 @@ public class MainGUI extends JFrame implements ActionListener {
 
     }
 
-
-//    private static ActionListener createStartTaskActionListener(JFrame frame) {
-//        //for progress monitor dialog title
-//        UIManager.put("ProgressMonitor.progressText", "Копирование...");
-//        //frame.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-//        frame.setResizable(false);
-//        return (ae) -> new Thread(() -> {
-//            //creating ProgressMonitor instance
-//            ProgressMonitor pm = new ProgressMonitor(frame, "Копирование фотографий",
-//                    "Копирование...", 0, 100);
-//            //decide after 0 millis whether to show popup or not
-//            pm.setMillisToDecideToPopup(0);
-//            //after deciding if predicted time is longer than 100 show popup
-//            pm.setMillisToPopup(0);
-//            CopyDirVisitor.setPm(pm);
-//            try {
-//                Thread.sleep(1);
-//                Copier.copyStart();
-//            }
-//            catch (IOException | InterruptedException | NullPointerException e) {
-//                StringBuilder sb = new StringBuilder("Error: ");
-//                sb.append(e.getMessage());
-//                sb.append("\n");
-//                for (StackTraceElement ste : e.getStackTrace()) {
-//                    sb.append(ste.toString());
-//                    sb.append("\n");
-//                }
-//                JTextArea jta = new JTextArea(sb.toString());
-//                jta.setFont(jta.getFont().deriveFont(12f));
-//                JScrollPane jsp = new JScrollPane(jta){
-//                    @Override
-//                    public Dimension getPreferredSize() {
-//                        return new Dimension(480, 320);
-//                    }
-//                };
-//                JOptionPane.showMessageDialog(
-//                        null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
-//            }
-//            pm.setNote("Копирование завершено!");
-//        }).start();
-//    }
-
     public static void copyAction(){
-//        JDialog dlg = new JDialog(frame,"Progress dialog",true);
-//        frame.getContentPane().setLayout(new BorderLayout());
-//        dlg.getContentPane().setLayout(new BorderLayout());
-//        dlg.getContentPane().add(BorderLayout.CENTER, pb);
-//        dlg.getContentPane().add(BorderLayout.NORTH, new JLabel("Progress..."));
-//        dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-//        dlg.setSize(300, 75);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -374,106 +352,12 @@ public class MainGUI extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(
                             null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
                 }
-//                SwingUtilities.invokeLater(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        dlg.setVisible(false);
-//                    }
-//
-//                });
             }
 
         });
         t.start();
     }
 
-    //    private static ActionListener createStartTaskActionListener(JFrame frame) {
-//        Thread t = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                frame.add(pb);
-//                frame.pack();
-//                frame.setVisible(true);
-//
-//                CopyDirVisitor.setPb(pb);
-//                try {
-//                    Thread.sleep(1);
-//                    Copier.copyStart();
-//                }
-//                catch (IOException | InterruptedException | NullPointerException e) {
-//                    StringBuilder sb = new StringBuilder("Error: ");
-//                    sb.append(e.getMessage());
-//                    sb.append("\n");
-//                    for (StackTraceElement ste : e.getStackTrace()) {
-//                        sb.append(ste.toString());
-//                        sb.append("\n");
-//                    }
-//                    JTextArea jta = new JTextArea(sb.toString());
-//                    jta.setFont(jta.getFont().deriveFont(12f));
-//                    JScrollPane jsp = new JScrollPane(jta){
-//                        @Override
-//                        public Dimension getPreferredSize() {
-//                            return new Dimension(480, 320);
-//                        }
-//                    };
-//                    JOptionPane.showMessageDialog(
-//                            null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-////                SwingUtilities.invokeLater(new Runnable() {
-////                    @Override
-////                    public void run() {
-////                        dlg.setVisible(false);
-////                    }
-////
-////                });
-//            }
-//
-//        });
-//        t.start();
-//        //for progress monitor dialog title
-//        UIManager.put("ProgressMonitor.progressText", "Копирование...");
-//        //frame.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-//        //frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-//        frame.setLayout(new FlowLayout(FlowLayout.CENTER));
-//        frame.setResizable(false);
-//        return (ae) -> new Thread(() -> {
-//            //creating ProgressMonitor instance
-//            //ProgressMonitor pm = new ProgressMonitor(frame, "Копирование фотографий",
-////                    "Копирование...", 0, 100);
-//            JProgressBar pb = new JProgressBar(JProgressBar.HORIZONTAL);
-//            //decide after 0 millis whether to show popup or not
-//            pb.setMinimum(0);
-//            pb.setMaximum(100);
-//            //after deciding if predicted time is longer than 100 show popup
-//            frame.add(pb);
-//            frame.pack();
-//            frame.setVisible(true);
-//
-//            CopyDirVisitor.setPb(pb);
-//            try {
-//                Thread.sleep(1);
-//                Copier.copyStart();
-//            }
-//            catch (IOException | InterruptedException | NullPointerException e) {
-//                StringBuilder sb = new StringBuilder("Error: ");
-//                sb.append(e.getMessage());
-//                sb.append("\n");
-//                for (StackTraceElement ste : e.getStackTrace()) {
-//                    sb.append(ste.toString());
-//                    sb.append("\n");
-//                }
-//                JTextArea jta = new JTextArea(sb.toString());
-//                jta.setFont(jta.getFont().deriveFont(12f));
-//                JScrollPane jsp = new JScrollPane(jta){
-//                    @Override
-//                    public Dimension getPreferredSize() {
-//                        return new Dimension(480, 320);
-//                    }
-//                };
-//                JOptionPane.showMessageDialog(
-//                        null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }).start();
     public void actionPerformed(ActionEvent event) {
         copyAction();
     }

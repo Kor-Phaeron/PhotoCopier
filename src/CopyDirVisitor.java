@@ -15,16 +15,9 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
     public static float percentCopied;
     public static int copying;
     public static int copying2;
-//    static final String ANSI_GREEN = "\u001b[32m";
-//    static final String ANSI_RESET = "\u001B[0m";
-    public static ProgressMonitor pm1;
     public static JProgressBar pb1;
     public static double transferSpeedMB = 0;
-
-
-    public static void setPm(ProgressMonitor pm) {
-        pm1 = pm;
-    }
+    public static String transferSpeedMBShow;
 
     public static void setPb(JProgressBar pb) {
         pb1 = pb;
@@ -48,7 +41,6 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-//        pm1.setProgress(copying);
         Long start = System.nanoTime();
         pb1.setValue(copying2);
         SwingUtilities.invokeLater(() -> MainGUI.outputTextArea.setText(MainGUI.outputTextArea.getText()
@@ -59,7 +51,6 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
                 + String.format(file.getFileName() + " is copying..." + "done!" + "\n")));
         System.out.println((file.getFileName() + " is copying..." + "done!"));
         DecimalFormat numberFormat = new DecimalFormat("0.00");
-//        pm1.setNote("Скопировано " + numberFormat.format(percentCopied) + " %");
         totalFilesSizeCopied += Methods.size(file);
         totalFilesSizeToCopy = Methods.size(fromPath);
         percentCopied = (float) (totalFilesSizeCopied) / (float) totalFilesSizeToCopy * 100;
@@ -70,25 +61,19 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
         copying2 = (int) percentCopied2*1;
         System.out.println("Overall progress " + numberFormat.format(percentCopied) + "%");
         System.out.println("Progressbar value: " + pb1.getValue());
-//        System.out.println("Overall progress x10 " + percentCopied*10 + "%");
-//        System.out.println("Overall progress int " + (int) percentCopied + "%");
-//        System.out.println("Overall progress int x10 " + (int) copyingPercent + "%");
-//        System.out.println("Overall progress int/10 " + (int) percentCopied/10 + "%");
-//        if (pm1.isCanceled()) {
-//            pm1.close();
-//            System.exit(1);
-//            return FileVisitResult.TERMINATE;
-//        }
         Long end = System.nanoTime();
         double fileSize = Methods.size(file)/1024.0/1024.0;
-        int timeElapsed = (int) ((end - start)/100000000);
+        int timeElapsed = (int) ((end - start)/10000000);
 
-        transferSpeedMB = fileSize/timeElapsed*10;
+        transferSpeedMB = fileSize/timeElapsed*100;
         System.out.println("Время начала передачи файла: " + start/100000000);
         System.out.println("Время конца передачи файла: " + end/100000000);
         System.out.println("Время передачи файла: " + timeElapsed);
-        System.out.println("Размер переданного файла: " + fileSize);
+        System.out.println("Размер переданного файла: " + numberFormat.format(fileSize) + " MB");
         System.out.println("Скорость передачи данных: " + numberFormat.format(transferSpeedMB) + " MBps");
+        transferSpeedMBShow = numberFormat.format(transferSpeedMB);
+        System.out.println("TransferSpeedMBSHOW = " + transferSpeedMBShow);
+        SwingUtilities.invokeLater(() -> MainGUI.transferSpeedShow.setText(numberFormat.format(transferSpeedMB) + " МБ/сек"));
 
         if (percentCopied == 100) {
             pb1.setValue(100);
