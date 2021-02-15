@@ -11,7 +11,7 @@ import java.util.Vector;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
-public class MainGUI extends JFrame implements ActionListener {
+public class MainGUI extends JFrame {
     static JFrame frame;
     static String addressFromCopy;
     static String addressToCopy;
@@ -24,9 +24,12 @@ public class MainGUI extends JFrame implements ActionListener {
     static JScrollPane scrollPanel;
     static Vector<Component> fields = new Vector<>(5);
     static JProgressBar pb = new JProgressBar(JProgressBar.HORIZONTAL);
-    static JButton start = new JButton("Старт");
-    static JButton stop = new JButton("Стоп");
+    static JButton copyButton = new JButton("Копировать");
+    static JButton moveButton = new JButton("Переместить");
+    static JButton stopButton = new JButton("Стоп");
     static JLabel filesCopied = new JLabel();
+    static JLabel copyDone = new JLabel("Копирование завершено!");
+    static JLabel moveDone = new JLabel("Перемещение завершено!");
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
 
@@ -134,7 +137,7 @@ public class MainGUI extends JFrame implements ActionListener {
         instruction3.setFont(new Font("Comic sans MS", Font.BOLD, 18));
         JLabel instruction4 = new JLabel("4. Выберите папку, куда сохранить фотографии.");
         instruction4.setFont(new Font("Comic sans MS", Font.BOLD, 18));
-        JLabel instruction5 = new JLabel("5. Нажмите на кнопку \"Старт\".");
+        JLabel instruction5 = new JLabel("5. Нажмите на кнопку \"Копировать\" или \"Переместить\".");
         instruction5.setFont(new Font("Comic sans MS", Font.BOLD, 18));
 
         //address elements
@@ -150,10 +153,18 @@ public class MainGUI extends JFrame implements ActionListener {
         addressEl4.setFont(new Font("Comic sans MS", Font.BOLD, 18));
 
 
+        copyButton.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        moveButton.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        stopButton.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        stopButton.setVisible(false);
 
-        start.setFont(new Font("Comic sans MS", Font.BOLD, 18));
-        stop.setFont(new Font("Comic sans MS", Font.BOLD, 18));
-        stop.setVisible(false);
+        copyDone.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        copyDone.setForeground(Color.green);
+        copyDone.setVisible(false);
+        moveDone.setFont(new Font("Comic sans MS", Font.BOLD, 18));
+        moveDone.setForeground(Color.green);
+        moveDone.setVisible(false);
+
 
         KeyListener k = new KeyListener() {
             @Override
@@ -246,8 +257,12 @@ public class MainGUI extends JFrame implements ActionListener {
                                         .addComponent(addressString4)
                                         .addComponent(addressEl4)
                                         .addComponent(addressStringPort))
-                                .addComponent(start)
-                                .addComponent(stop)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(copyButton)
+                                        .addComponent(moveButton))
+                                .addComponent(stopButton)
+                                .addComponent(copyDone)
+                                .addComponent(moveDone)
                                 .addComponent(pb)
                                 .addGroup(layout.createSequentialGroup()
                                         .addComponent(transferSpeed)
@@ -282,8 +297,12 @@ public class MainGUI extends JFrame implements ActionListener {
                 .addComponent(destPath0)
                 .addComponent(destPath1)
                 .addComponent(instruction5)
-                .addComponent(start)
-                .addComponent(stop)
+                .addGroup(layout.createParallelGroup()
+                        .addComponent(copyButton)
+                        .addComponent(moveButton))
+                .addComponent(stopButton)
+                .addComponent(copyDone)
+                .addComponent(moveDone)
                 .addComponent(pb)
                 .addGroup(layout.createParallelGroup()
                         .addComponent(transferSpeed)
@@ -304,13 +323,15 @@ public class MainGUI extends JFrame implements ActionListener {
                 + addressString4.getText() + "@"
                 + addressStringPort.getText();
 
-        stop.addActionListener(new ActionListener() {
+        stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                stop.setVisible(false);
-                stop.setEnabled(false);
-                start.setVisible(true);
-                start.setEnabled(true);
+                stopButton.setVisible(false);
+                stopButton.setEnabled(false);
+                copyButton.setVisible(true);
+                copyButton.setEnabled(true);
+                moveButton.setVisible(true);
+                moveButton.setEnabled(true);
                 folderChoose.setEnabled(true);
                 addressString1.setEnabled(true);
                 addressString2.setEnabled(true);
@@ -320,11 +341,11 @@ public class MainGUI extends JFrame implements ActionListener {
             }
         });
 
-        if (stop.getModel().isPressed()) {
+        if (stopButton.getModel().isPressed()) {
             System.out.println("Кнопка стоп нажата!!!");
         }
 
-        start.addActionListener(arg0 -> {
+        copyButton.addActionListener(arg0 -> {
             String address = addressString1.getText() + "."
                     + addressString2.getText() + "."
                     + addressString3.getText() + "."
@@ -332,10 +353,12 @@ public class MainGUI extends JFrame implements ActionListener {
                     + addressStringPort.getText();
             System.out.println("Адрес задан: " + address);
             Copier.address = address;
-            start.setEnabled(false);
-            start.setVisible(false);
+            copyButton.setEnabled(false);
+            copyButton.setVisible(false);
+            moveButton.setEnabled(false);
+            moveButton.setVisible(false);
             //stop.setEnabled(true);
-            stop.setVisible(true);
+            stopButton.setVisible(true);
             folderChoose.setEnabled(false);
             addressString1.setEnabled(false);
             addressString2.setEnabled(false);
@@ -344,16 +367,50 @@ public class MainGUI extends JFrame implements ActionListener {
             addressStringPort.setEnabled(false);
         });
 
-        start.addActionListener(new ActionListener() {
+        moveButton.addActionListener(arg0 -> {
+            String address = addressString1.getText() + "."
+                    + addressString2.getText() + "."
+                    + addressString3.getText() + "."
+                    + addressString4.getText() + "@"
+                    + addressStringPort.getText();
+            System.out.println("Адрес задан: " + address);
+            Copier.address = address;
+            copyButton.setEnabled(false);
+            copyButton.setVisible(false);
+            moveButton.setEnabled(false);
+            moveButton.setVisible(false);
+            //stop.setEnabled(true);
+            stopButton.setVisible(true);
+            folderChoose.setEnabled(false);
+            addressString1.setEnabled(false);
+            addressString2.setEnabled(false);
+            addressString3.setEnabled(false);
+            addressString4.setEnabled(false);
+            addressStringPort.setEnabled(false);
+        });
+
+        copyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 copyAction();
             }
         });
 
+        moveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveAction();
+            }
+        });
+
+
     }
 
-    public static void copyAction(){
+//    public void actionPerformed(ActionEvent event) {
+//        copyAction();
+//    }
+
+    public static void copyAction() {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -386,7 +443,36 @@ public class MainGUI extends JFrame implements ActionListener {
         t.start();
     }
 
-    public void actionPerformed(ActionEvent event) {
-        copyAction();
+    public static void moveAction() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                MoveDirVisitor.setPb(pb);
+                try {
+                    Thread.sleep(1);
+                    Copier.moveStart();
+                } catch (IOException | InterruptedException | NullPointerException e) {
+                    StringBuilder sb = new StringBuilder("Error: ");
+                    sb.append(e.getMessage());
+                    sb.append("\n");
+                    for (StackTraceElement ste : e.getStackTrace()) {
+                        sb.append(ste.toString());
+                        sb.append("\n");
+                    }
+                    JTextArea jta = new JTextArea(sb.toString());
+                    jta.setFont(jta.getFont().deriveFont(12f));
+                    JScrollPane jsp = new JScrollPane(jta) {
+                        @Override
+                        public Dimension getPreferredSize() {
+                            return new Dimension(480, 320);
+                        }
+                    };
+                    JOptionPane.showMessageDialog(
+                            null, jsp, "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        });
+        t.start();
     }
 }
