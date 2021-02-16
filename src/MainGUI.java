@@ -58,6 +58,9 @@ public class MainGUI extends JFrame {
         destPath1.setFont(new Font("Comic sans MS", Font.BOLD, 18));
         destPath1.setForeground(Color.red);
 
+        copyButton.setEnabled(false);
+        moveButton.setEnabled(false);
+
 
         folderChoose.addActionListener(e -> {
             chooser = new JFileChooser();
@@ -84,6 +87,8 @@ public class MainGUI extends JFrame {
                 destPath1.setText(chooser.getSelectedFile().toString());
                 destPath1.setFont(new Font("Comic sans MS", Font.BOLD, 18));
                 destPath1.setForeground(Color.green);
+                copyButton.setEnabled(true);
+                moveButton.setEnabled(true);
             } else {
                 System.out.println("No Selection ");
             }
@@ -351,20 +356,25 @@ public class MainGUI extends JFrame {
                     + addressString3.getText() + "."
                     + addressString4.getText() + "@"
                     + addressStringPort.getText();
-            System.out.println("Адрес задан: " + address);
-            Copier.address = address;
-            copyButton.setEnabled(false);
-            copyButton.setVisible(false);
-            moveButton.setEnabled(false);
-            moveButton.setVisible(false);
-            //stop.setEnabled(true);
-            stopButton.setVisible(true);
-            folderChoose.setEnabled(false);
-            addressString1.setEnabled(false);
-            addressString2.setEnabled(false);
-            addressString3.setEnabled(false);
-            addressString4.setEnabled(false);
-            addressStringPort.setEnabled(false);
+            if (address.equals("...@")){
+                JOptionPane.showMessageDialog(frame, "Адрес не задан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                System.out.println("Адрес задан: " + address);
+                Copier.address = address;
+                copyButton.setEnabled(false);
+                copyButton.setVisible(false);
+                moveButton.setEnabled(false);
+                moveButton.setVisible(false);
+                stopButton.setEnabled(true);
+                stopButton.setVisible(true);
+                folderChoose.setEnabled(false);
+                addressString1.setEnabled(false);
+                addressString2.setEnabled(false);
+                addressString3.setEnabled(false);
+                addressString4.setEnabled(false);
+                addressStringPort.setEnabled(false);
+            }
         });
 
         moveButton.addActionListener(arg0 -> {
@@ -373,20 +383,25 @@ public class MainGUI extends JFrame {
                     + addressString3.getText() + "."
                     + addressString4.getText() + "@"
                     + addressStringPort.getText();
-            System.out.println("Адрес задан: " + address);
-            Copier.address = address;
-            copyButton.setEnabled(false);
-            copyButton.setVisible(false);
-            moveButton.setEnabled(false);
-            moveButton.setVisible(false);
-            //stop.setEnabled(true);
-            stopButton.setVisible(true);
-            folderChoose.setEnabled(false);
-            addressString1.setEnabled(false);
-            addressString2.setEnabled(false);
-            addressString3.setEnabled(false);
-            addressString4.setEnabled(false);
-            addressStringPort.setEnabled(false);
+            if (address.equals("...@")){
+                JOptionPane.showMessageDialog(frame, "Адрес не задан!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                System.out.println("Адрес задан: " + address);
+                Copier.address = address;
+                copyButton.setEnabled(false);
+                copyButton.setVisible(false);
+                moveButton.setEnabled(false);
+                moveButton.setVisible(false);
+                stopButton.setEnabled(true);
+                stopButton.setVisible(true);
+                folderChoose.setEnabled(false);
+                addressString1.setEnabled(false);
+                addressString2.setEnabled(false);
+                addressString3.setEnabled(false);
+                addressString4.setEnabled(false);
+                addressStringPort.setEnabled(false);
+            }
         });
 
         copyButton.addActionListener(new ActionListener() {
@@ -405,10 +420,6 @@ public class MainGUI extends JFrame {
 
 
     }
-
-//    public void actionPerformed(ActionEvent event) {
-//        copyAction();
-//    }
 
     public static void copyAction() {
         Thread t = new Thread(new Runnable() {

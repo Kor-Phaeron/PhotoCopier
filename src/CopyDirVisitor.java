@@ -9,16 +9,16 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
     private final Path fromPath;
     private final Path toPath;
     private final CopyOption copyOption;
-    public static long totalFilesSizeCopied;
-    public static long totalFilesSizeToCopy;
-    public static float percentCopied;
-    public static int copying;
-    public static int copying2;
+    public long totalFilesSizeCopied;
+    public long totalFilesSizeToCopy;
+    public float percentCopied;
+    public int copying;
+    public int copying2;
     public static JProgressBar pb1;
-    public static double transferSpeedMB = 0;
-    public static String transferSpeedMBShow;
-    public static int totalFiles = 0;
-    public static int filesCopied = 1;
+    public double transferSpeedMB = 0;
+    public String transferSpeedMBShow;
+    public int totalFiles = 0;
+    public int filesCopied = 1;
 
     public static void setPb(JProgressBar pb) {
         pb1 = pb;
